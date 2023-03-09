@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Square } from "./components/Square.jsx";
 import conffeti from "canvas-confetti";
 import { TURNS } from "./constantes";
@@ -40,7 +40,6 @@ function App() {
     if (newWinner) {
       conffeti();
       setWinner(newWinner); // el render de react es asincrono
-      console.log(winner);
     } else if (checkEndGame(newBoard)) {
       setWinner(false);
     }
@@ -52,6 +51,11 @@ function App() {
     setWinner(null);
     resetGameStorage()
   };
+  
+  useEffect(() => {
+    // Como minimo se ejecuta una vez
+    console.log('useEffect')
+  },[winner])
 
   return (
     <main className="board">
