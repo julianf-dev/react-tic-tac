@@ -4,13 +4,21 @@ import conffeti from "canvas-confetti";
 import { TURNS } from "./constantes";
 import { checkEndGame, checkWinner } from "./logic/board.js";
 
-import "./App.css";
 import { WinnerModal } from "./components/WinnerModal.js";
 import { Board } from "./components/Board.js";
+import { resetGameStorage, saveGameToStorage } from "./logic/storage/index.js";
 
 function App() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [turn, setTurn] = useState(TURNS.X);
+  const [board, setBoard] = useState(() => {
+    const boardFromStorage = window.localStorage.getItem('board')
+    return boardFromStorage ? JSON.parse(boardFromStorage) : Array(9).fill(null)
+  });
+  const [turn, setTurn] = useState(
+    () => {
+      const turnFromStorage = window.localStorage.getItem('turn')
+      return turnFromStorage ?? TURNS.X
+    }
+  );
   const [winner, setWinner] = useState<boolean | null>(null);
 
   const updateBoard = (index: number) => {
@@ -22,6 +30,11 @@ function App() {
     setBoard(newBoard);
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X;
     setTurn(newTurn);
+    saveGameToStorage({
+      board: newBoard,
+      turn: newTurn
+    })
+    
     //Checkear winner
     const newWinner = checkWinner(newBoard);
     if (newWinner) {
@@ -37,6 +50,7 @@ function App() {
     setBoard(Array(9).fill(null));
     setTurn(TURNS.X);
     setWinner(null);
+    resetGameStorage()
   };
 
   return (
